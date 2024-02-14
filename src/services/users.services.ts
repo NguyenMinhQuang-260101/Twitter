@@ -47,6 +47,7 @@ class UsersService {
 
     return { access_token, refresh_token }
   }
+
   async checkEmailExist(email: string) {
     const user = await databaseService.users.findOne({ email })
     return Boolean(user)
