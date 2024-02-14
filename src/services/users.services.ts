@@ -1,6 +1,7 @@
 import { config } from 'dotenv'
 import { ObjectId } from 'mongodb'
 import { TokenType } from '~/constants/enums'
+import { USERS_MESSAGES } from '~/constants/message'
 import { RegisterReqBody } from '~/models/requests/User.requests'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import User from '~/models/schemas/User.schema'
@@ -77,6 +78,13 @@ class UsersService {
     return {
       access_token,
       refresh_token
+    }
+  }
+
+  async logout(refresh_token: string) {
+    await databaseService.refreshTokens.deleteOne({ token: refresh_token })
+    return {
+      message: USERS_MESSAGES.LOGOUT_SUCCESS
     }
   }
 }
