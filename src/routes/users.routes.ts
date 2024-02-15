@@ -7,7 +7,8 @@ import {
   resendVerifyEmailController,
   forgotPasswordController,
   verifyForgotPasswordController,
-  resetPasswordController
+  resetPasswordController,
+  getMeController
 } from '~/controllers/users.controllers'
 import {
   accessTokenValidator,
@@ -23,7 +24,7 @@ import { wrapRequestHandler } from '~/utils/handlers'
 
 const usersRouter = Router()
 /**
- * Description. Login a user
+ * Description: Login a user
  * Path: /login
  * Method: POST
  * Body: {name: string, email: string, password: string}
@@ -31,7 +32,7 @@ const usersRouter = Router()
 usersRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
 
 /**
- * Description. Register a new user
+ * Description: Register a new user
  * Path: /register
  * Method: POST
  * Body: {name: string, email: string, password: string, confirm_password: string, day-of-birth: ISO8601}
@@ -39,7 +40,7 @@ usersRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
 usersRouter.post('/register', registerValidator, wrapRequestHandler(registerController))
 
 /**
- * Description. Logout a user
+ * Description: Logout a user
  * Path: /logout
  * Method: POST
  * Header: {Authorization: Bearer <access_token>}
@@ -48,7 +49,7 @@ usersRouter.post('/register', registerValidator, wrapRequestHandler(registerCont
 usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapRequestHandler(logoutController))
 
 /**
- * Description. Verify email when user lick on the link in email
+ * Description: Verify email when user lick on the link in email
  * Path: /verify-email
  * Method: POST
  * Body: {email_verify_token: string}
@@ -56,7 +57,7 @@ usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapReq
 usersRouter.post('/verify-email', emailVerifyTokenValidator, wrapRequestHandler(verifyEmailController))
 
 /**
- * Description. Verify email when user lick on the link in email
+ * Description: Verify email when user lick on the link in email
  * Path: /resend-verify-email
  * Method: POST
  * Header: {Authorization: Bearer <access_token>}
@@ -65,7 +66,7 @@ usersRouter.post('/verify-email', emailVerifyTokenValidator, wrapRequestHandler(
 usersRouter.post('/resend-verify-email', accessTokenValidator, wrapRequestHandler(resendVerifyEmailController))
 
 /**
- * Description. Submit email to reset password, send email to user
+ * Description: Submit email to reset password, send email to user
  * Path: /forgot-password
  * Method: POST
  * Body: {email: string}
@@ -73,7 +74,7 @@ usersRouter.post('/resend-verify-email', accessTokenValidator, wrapRequestHandle
 usersRouter.post('/forgot-password', forgotPasswordValidator, wrapRequestHandler(forgotPasswordController))
 
 /**
- * Description. Verify link in email to reset password
+ * Description: Verify link in email to reset password
  * Path: /forgot-password
  * Method: POST
  * Body: {forgot_password_token: string}
@@ -85,11 +86,19 @@ usersRouter.post(
 )
 
 /**
- * Description. Reset password
+ * Description: Reset password
  * Path: /reset-password
  * Method: POST
  * Body: {forgot_password_token: string, password, confirm-password}
  */
 usersRouter.post('/reset-password', resetPasswordValidator, wrapRequestHandler(resetPasswordController))
+
+/**
+ * Description: Get me
+ * Path: /me
+ * Method: GOT
+ * Header: {Authorization: Bearer <access_token>}
+ */
+usersRouter.get('/me', accessTokenValidator, wrapRequestHandler(getMeController))
 
 export default usersRouter
