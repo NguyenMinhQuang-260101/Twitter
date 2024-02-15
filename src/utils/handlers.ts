@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response, RequestHandler } from 'express'
 
-export const wrapRequestHandler = (func: RequestHandler) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+export const wrapRequestHandler = <P>(func: RequestHandler<P>) => {
+  return async (req: Request<P>, res: Response, next: NextFunction) => {
     // Promise.resolve(func(req, res, next)).catch(next)
     try {
       await func(req, res, next)
@@ -10,3 +10,6 @@ export const wrapRequestHandler = (func: RequestHandler) => {
     }
   }
 }
+
+// Mong muốn nhận vào là: Request<{username:string}>
+// Thực nhận là: Request<{[key:string]: string}>
