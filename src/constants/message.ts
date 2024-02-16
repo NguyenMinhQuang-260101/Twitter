@@ -62,8 +62,7 @@ export const USERS_MESSAGES = {
   GMAIL_NOT_VERIFIED: 'Gmail not verified',
   UPLOAD_SUCCESS: 'Upload success',
   REFRESH_TOKEN_SUCCESS: 'Refresh token success',
-  GET_VIDEO_STATUS_SUCCESS: 'Get video status success',
-  USERNAME_LENGTH: 'Username length must be from 1 to 50'
+  GET_VIDEO_STATUS_SUCCESS: 'Get video status success'
 } as const
 
 export const TWEETS_MESSAGES = {
