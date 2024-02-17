@@ -23,6 +23,14 @@ export const uploadVideoController = async (req: Request, res: Response, next: N
   })
 }
 
+export const uploadVideoHLSController = async (req: Request, res: Response, next: NextFunction) => {
+  const url = await mediasService.uploadVideoHLS(req)
+  return res.json({
+    message: USERS_MESSAGES.UPLOAD_SUCCESS,
+    result: url
+  })
+}
+
 export const serveImageController = (req: Request, res: Response, next: NextFunction) => {
   const { name } = req.params
   const isNameJpg = !name.includes('.') ? name + '.jpg' : name
