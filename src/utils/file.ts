@@ -1,4 +1,3 @@
-import { serveVideoController } from '~/controllers/medias.controllers'
 import { Request } from 'express'
 import formidable, { File } from 'formidable'
 import fs from 'fs'
