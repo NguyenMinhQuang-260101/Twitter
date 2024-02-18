@@ -10,7 +10,9 @@ import staticRouter from './routes/static.routes'
 import cors from 'cors'
 
 config()
-databaseService.connect()
+databaseService.connect().then(() => {
+  databaseService.indexUsers()
+})
 const app = express()
 app.use(cors())
 const port = process.env.PORT || 4000
@@ -28,3 +30,24 @@ app.use(defaultErrorHandle)
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+
+// Code Test Index trong MongoDB
+// const mgclient = new MongoClient(
+//   `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@twitter.5ndsv0f.mongodb.net/?retryWrites=true&w=majority`
+// )
+// const db = mgclient.db('earth')
+// Tạo 1000 document vào collection users
+// const users = db.collection('users')
+// const userData = []
+// function getRandomNumber() {
+//   return Math.floor(Math.random() * 100) + 1
+// }
+
+// for (let i = 0; i < 1000; i++) {
+//   userData.push({
+//     name: 'user' + (i + 1),
+//     age: getRandomNumber(),
+//     sex: i % 2 === 0 ? 'male' : 'female'
+//   })
+// }
+// users.insertMany(userData)

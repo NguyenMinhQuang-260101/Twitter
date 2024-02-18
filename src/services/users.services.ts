@@ -10,7 +10,7 @@ import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import User from '~/models/schemas/User.schema'
 import databaseService from '~/services/database.services'
 import { hashPassword } from '~/utils/crypto'
-import { signToken } from '~/utils/jwt'
+import { signToken, verifyToken } from '~/utils/jwt'
 import axios from 'axios'
 config()
 
@@ -29,7 +29,18 @@ class UsersService {
     })
   }
 
-  private signRefreshToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+  private signRefreshToken({ user_id, verify, exp }: { user_id: string; verify: UserVerifyStatus; exp?: number }) {
+    if (exp) {
+      return signToken({
+        payload: {
+          user_id,
+          token_type: TokenType.RefreshToken,
+          verify,
+          exp
+        },
+        privateKey: process.env.JWT_SECRET_REFRESH_TOKEN as string
+      })
+    }
     return signToken({
       payload: {
         user_id,
@@ -75,6 +86,13 @@ class UsersService {
     return Promise.all([this.signAccessToken({ user_id, verify }), this.signRefreshToken({ user_id, verify })])
   }
 
+  private decodeRefreshToken(refresh_token: string) {
+    return verifyToken({
+      token: refresh_token,
+      secretOrPublicKey: process.env.JWT_SECRET_REFRESH_TOKEN as string
+    })
+  }
+
   async register(payload: RegisterReqBody) {
     const user_id = new ObjectId()
     const email_verify_token = await this.signEmailVerifyToken({
@@ -96,10 +114,14 @@ class UsersService {
       user_id: user_id.toString(),
       verify: UserVerifyStatus.Unverified
     })
+
+    const { iat, exp } = await this.decodeRefreshToken(refresh_token)
     await databaseService.refreshTokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),
-        token: refresh_token
+        token: refresh_token,
+        iat,
+        exp
       })
     )
 
@@ -121,10 +143,14 @@ class UsersService {
       user_id,
       verify
     })
+
+    const { iat, exp } = await this.decodeRefreshToken(refresh_token)
     await databaseService.refreshTokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),
-        token: refresh_token
+        token: refresh_token,
+        iat,
+        exp
       })
     )
     return {
@@ -194,10 +220,14 @@ class UsersService {
         user_id: user._id.toString(),
         verify: user.verify
       })
+
+      const { iat, exp } = await this.decodeRefreshToken(refresh_token)
       await databaseService.refreshTokens.insertOne(
         new RefreshToken({
           user_id: new ObjectId(user._id),
-          token: refresh_token
+          token: refresh_token,
+          iat,
+          exp
         })
       )
       return {
@@ -251,8 +281,10 @@ class UsersService {
       ])
     ])
     const [access_token, refresh_token] = token
+    const { iat, exp } = await this.decodeRefreshToken(refresh_token)
+
     await databaseService.refreshTokens.insertOne(
-      new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
+      new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token, iat, exp })
     )
     return {
       access_token,
@@ -263,22 +295,27 @@ class UsersService {
   async refreshToken({
     user_id,
     verify,
-    refresh_token
+    refresh_token,
+    exp
   }: {
     user_id: string
     verify: UserVerifyStatus
     refresh_token: string
+    exp: number
   }) {
     const [new_access_token, new_refresh_token] = await Promise.all([
       this.signAccessToken({ user_id, verify }),
-      this.signRefreshToken({ user_id, verify }),
+      this.signRefreshToken({ user_id, verify, exp }),
       databaseService.refreshTokens.deleteOne({ token: refresh_token })
     ])
 
+    const decode_refresh_token = await this.decodeRefreshToken(new_refresh_token)
     await databaseService.refreshTokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),
-        token: new_refresh_token
+        token: new_refresh_token,
+        iat: decode_refresh_token.iat,
+        exp: decode_refresh_token.exp
       })
     )
     return {
