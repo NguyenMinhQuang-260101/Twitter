@@ -10,6 +10,7 @@ const tweetsRouter = Router()
  * Description: Create a new tweet
  * Path: /login
  * Method: POST
+ * Header: {Authorization: Bearer <access_token>}
  * Body: TweetRequestBody
  */
 tweetsRouter.post(
