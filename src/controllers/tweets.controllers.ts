@@ -1,6 +1,6 @@
 import { ParamsDictionary } from 'express-serve-static-core'
 import { Request, Response } from 'express'
-import { TweetParam, TweetQuery, TweetRequestBody } from '~/models/requests/Tweet.requests'
+import { Pagination, TweetParam, TweetQuery, TweetRequestBody } from '~/models/requests/Tweet.requests'
 import tweetsService from '~/services/tweets.services'
 import { TokenPayload } from '~/models/requests/User.requests'
 import { TweetType } from '~/constants/enums'
@@ -50,4 +50,16 @@ export const getTweetChildrenController = async (req: Request<TweetParam, any, a
       total_page: Math.ceil(total / limit)
     }
   })
+}
+
+export const getNewFeedsController = async (req: Request<ParamsDictionary, any, any, Pagination>, res: Response) => {
+  const user_id = req.decoded_authorization?.user_id as string
+  const limit = Number(req.query.limit)
+  const page = Number(req.query.page)
+  const result = await tweetsService.getNewFeeds({
+    user_id,
+    limit,
+    page
+  })
+  return res.json({ message: 'Get new feeds successfully', result })
 }

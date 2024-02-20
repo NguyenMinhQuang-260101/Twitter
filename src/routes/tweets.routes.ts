@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import {
   createTweetController,
+  getNewFeedsController,
   getTweetChildrenController,
   getTweetDetailController
 } from '~/controllers/tweets.controllers'
@@ -8,6 +9,7 @@ import {
   audienceValidator,
   createTweetValidator,
   getTweetChildrenValidator,
+  paginationValidator,
   tweetIdValidator
 } from '~/middlewares/tweets.middlewares'
 import { accessTokenValidator, isUserLoggedInValidator, verifiedUserValidator } from '~/middlewares/users.middlewares'
@@ -17,7 +19,7 @@ const tweetsRouter = Router()
 
 /**
  * Description: Create a new tweet
- * Path: /login
+ * Path: /
  * Method: POST
  * Header: {Authorization: Bearer <access_token>}
  * Body: TweetRequestBody
@@ -55,11 +57,27 @@ tweetsRouter.get(
 tweetsRouter.get(
   '/:tweet_id/children',
   tweetIdValidator,
+  paginationValidator,
   getTweetChildrenValidator,
   isUserLoggedInValidator(accessTokenValidator),
   isUserLoggedInValidator(verifiedUserValidator),
   audienceValidator,
   wrapRequestHandler(getTweetChildrenController)
+)
+
+/**
+ * Description: Get new feeds
+ * Path: /
+ * Method: GET
+ * Header: {Authorization?: Bearer <access_token>}
+ * Query: {limit: number, page: number}
+ */
+tweetsRouter.get(
+  '/',
+  paginationValidator,
+  accessTokenValidator,
+  verifiedUserValidator,
+  wrapRequestHandler(getNewFeedsController)
 )
 
 export default tweetsRouter
