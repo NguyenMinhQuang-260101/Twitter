@@ -485,7 +485,7 @@ class TweetsService {
     })
     return {
       tweets,
-      total: total[0].total
+      total: total[0]?.total || 0
     }
   }
 }

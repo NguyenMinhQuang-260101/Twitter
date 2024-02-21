@@ -17,6 +17,11 @@ export enum MediaType {
   HLS
 }
 
+export enum MediaTypeQuery {
+  Image = 'image',
+  Video = 'video'
+}
+
 export enum EncodingStatus {
   Pending, // Đang chờ ở hàng đợi
   Processing, // Đang encode
@@ -34,4 +39,9 @@ export enum TweetType {
 export enum TweetAudience {
   Everyone, // 0
   TwitterCircle // 1
+}
+
+export enum PeopleFollow {
+  Anyone = '0',
+  Following = '1'
 }
