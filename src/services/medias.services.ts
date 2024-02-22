@@ -1,7 +1,7 @@
 import { Request } from 'express'
-import { getNameFromFullname, handleUploadImage, handleUploadVideo } from '~/utils/file'
+import { getFiles, getNameFromFullname, handleUploadImage, handleUploadVideo } from '~/utils/file'
 import sharp from 'sharp'
-import { UPLOAD_IMAGE_DIR } from '~/constants/dir'
+import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from '~/constants/dir'
 import path from 'path'
 import fs from 'fs'
 import fsPromise from 'fs/promises'
@@ -14,6 +14,7 @@ import databaseService from './database.services'
 import VideoStatus from '~/models/schemas/VideoStatus.schema'
 import { uploadFileToS3 } from '~/utils/s3'
 import mime from 'mime'
+import { rimrafSync } from 'rimraf'
 config()
 
 class Queue {
@@ -57,7 +58,22 @@ class Queue {
       try {
         await encodeHLSWithMultipleVideoStreams(videoPath)
         this.items.shift()
-        await fsPromise.unlink(videoPath)
+        const file = getFiles(path.resolve(UPLOAD_VIDEO_DIR, idName))
+        await Promise.all(
+          file.map((filepath) => {
+            // C:\Users\Admin\Documents\NODEJS\Twitter-Clone-v2\Twitter\uploads\videos\temp
+            // filepath: C:\Users\Admin\Documents\NODEJS\Twitter-Clone-v2\Twitter\uploads\videos\_cJB-3Ha2TPettOJtNtzT\v0\fileSequence0.ts
+            const filename = 'videos-hls/' + filepath.replace(path.resolve(UPLOAD_VIDEO_DIR) + '\\', '')
+            return uploadFileToS3({
+              filepath,
+              filename,
+              contentType: mime.getType(filepath) as string
+            })
+          })
+        )
+
+        rimrafSync(path.resolve(UPLOAD_VIDEO_DIR, idName))
+
         await databaseService.videoStatus.updateOne(
           {
             name: idName
