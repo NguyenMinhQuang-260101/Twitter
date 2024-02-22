@@ -12,6 +12,8 @@ import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
 import likesRouter from './routes/likes.routes'
 import searchRouter from './routes/search.routes'
+import { createServer } from 'http'
+import { Server } from 'socket.io'
 // import '~/utils/fake'
 
 config()
@@ -23,6 +25,7 @@ databaseService.connect().then(() => {
   databaseService.indexTweets()
 })
 const app = express()
+const httpServer = createServer(app)
 app.use(cors())
 const port = process.env.PORT || 4000
 
@@ -40,7 +43,40 @@ app.use('/static', staticRouter)
 app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 
 app.use(defaultErrorHandle)
-app.listen(port, () => {
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: 'http://localhost:3000'
+  }
+})
+
+const users: {
+  [key: string]: {
+    socket_id: string
+  }
+} = {}
+io.on('connection', (socket) => {
+  console.log(`user ${socket.id} connected`)
+  const user_id = socket.handshake.auth._id
+  users[user_id] = {
+    socket_id: socket.id
+  }
+  console.log(users)
+  socket.on('private message', (data) => {
+    const receiver_socket_id = users[data.to].socket_id
+    socket.to(receiver_socket_id).emit('receiver private message', {
+      content: data.content,
+      form: user_id
+    })
+  })
+  socket.on('disconnect', () => {
+    delete users[user_id]
+    console.log(`user ${socket.id} disconnected`)
+    console.log(users)
+  })
+})
+
+httpServer.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 

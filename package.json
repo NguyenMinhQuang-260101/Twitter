@@ -55,6 +55,11 @@
     "mongodb": "^6.3.0",
     "nanoid": "^5.0.5",
     "sharp": "^0.33.2",
+    "socket.io": "^4.7.4",
     "zx": "^7.2.3"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.8",
+    "utf-8-validate": "^5.0.10"
   }
 }
