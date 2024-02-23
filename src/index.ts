@@ -68,7 +68,10 @@ const users: {
 
 io.use(async (socket, next) => {
   const { Authorization } = socket.handshake.auth
-  console.log(Authorization)
+  if (!Authorization) {
+    return Authorization
+  }
+
   const access_token = Authorization?.split(' ')[1]
   try {
     const decoded_authorization = await verifyAccessToken(access_token)
