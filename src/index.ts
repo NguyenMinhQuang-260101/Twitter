@@ -32,16 +32,16 @@ const options: swaggerJsdoc.Options = {
     info: {
       title: 'X clone (Twitter API)',
       version: '1.0.0'
+    },
+    components: {
+      securitySchemes: {
+        BearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT'
+        }
+      }
     }
-    // components: {
-    //   securitySchemes: {
-    //     BearerAuth: {
-    //       type: 'http',
-    //       scheme: 'bearer',
-    //       bearerFormat: 'JWT'
-    //     }
-    //   }
-    // }
   },
   // apis: ['./src/routes/*.routes.ts', './src/models/requests/*.requests.ts'] // files containing annotations as above
   apis: ['./openapi/*.yaml']

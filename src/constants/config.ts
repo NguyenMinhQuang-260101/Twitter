@@ -1,8 +1,12 @@
 import { config } from 'dotenv'
 import argv from 'minimist'
 const options = argv(process.argv.slice(2))
-config()
-export const isProduction = Boolean(options.production)
+console.log(options)
+
+export const isProduction = options.env === 'production'
+config({
+  path: options.env ? `.env.${options.env}` : '.env'
+})
 
 export const envConfig = {
   port: (process.env.PORT as string) || 4000,
