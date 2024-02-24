@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npx nodemon --env=development",
+    "dev": "npx nodemon",
     "dev:stag": "npx nodemon --env=staging",
     "dev:prod": "npx nodemon --env=production",
     "build": "rimraf ./dist && tsc && tsc-alias",
@@ -52,6 +52,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.3",
     "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
     "express-validator": "^7.0.1",
     "formidable": "^3.5.1",
     "helmet": "^7.1.0",
