@@ -5,7 +5,7 @@ import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from '~/constants/dir'
 import path from 'path'
 import fs from 'fs'
 import fsPromise from 'fs/promises'
-import { isProduction } from '~/constants/config'
+import { envConfig, isProduction } from '~/constants/config'
 import { config } from 'dotenv'
 import { EncodingStatus, MediaType } from '~/constants/enums'
 import { Media } from '~/models/Other'
@@ -186,8 +186,8 @@ class MediasService {
         queue.enqueue(file.filepath)
         return {
           url: isProduction
-            ? `${process.env.HOST}/static/video-hls/${newName}/master.m3u8`
-            : `http://localhost:${process.env.PORT}/static/video-hls/${newName}/master.m3u8`,
+            ? `${envConfig.host}/static/video-hls/${newName}/master.m3u8`
+            : `http://localhost:${envConfig.port}/static/video-hls/${newName}/master.m3u8`,
           type: MediaType.HLS
         }
       })

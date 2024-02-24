@@ -15,6 +15,7 @@ import { TokenPayload } from '~/models/requests/User.requests'
 import { UserVerifyStatus } from '~/constants/enums'
 import { REGEX_USERNAME } from '~/constants/regex'
 import { verifyAccessToken } from '~/utils/commons'
+import { envConfig } from '~/constants/config'
 
 const passwordSchema: ParamSchema = {
   notEmpty: { errorMessage: USERS_MESSAGES.PASSWORD_IS_REQUIRED },
@@ -87,7 +88,7 @@ const forgotPasswordTokenSchema: ParamSchema = {
       try {
         const decoded_forgot_password_token = await verifyToken({
           token: value,
-          secretOrPublicKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string
+          secretOrPublicKey: envConfig.jwtSecretForgotPasswordToken
         })
 
         const { user_id } = decoded_forgot_password_token
@@ -303,7 +304,7 @@ export const refreshTokenValidator = validate(
             }
             try {
               const [decoded_refresh_token, refresh_token] = await Promise.all([
-                verifyToken({ token: value, secretOrPublicKey: process.env.JWT_SECRET_REFRESH_TOKEN as string }),
+                verifyToken({ token: value, secretOrPublicKey: envConfig.jwtSecretRefreshToken }),
                 databaseService.refreshTokens.findOne({ token: value })
               ])
               if (refresh_token === null) {
@@ -349,7 +350,7 @@ export const emailVerifyTokenValidator = validate(
             try {
               const decoded_email_verify_token = await verifyToken({
                 token: value,
-                secretOrPublicKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string
+                secretOrPublicKey: envConfig.jwtSecretEmailVerifyToken
               })
 
               ;(req as Request).decoded_email_verify_token = decoded_email_verify_token
