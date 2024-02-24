@@ -68,6 +68,7 @@ const users: {
 
 io.use(async (socket, next) => {
   const { Authorization } = socket.handshake.auth
+  // Đề phòng phía client gui request mà không có token do 1 lần đầu gọi access_token là undefined
   if (!Authorization) {
     return Authorization
   }
@@ -84,6 +85,8 @@ io.use(async (socket, next) => {
     }
     // truyen decoded_authorization vao socket de su dung o cac middleware khac
     socket.handshake.auth.decoded_authorization = decoded_authorization
+    socket.handshake.auth.access_token = access_token
+
     next()
   } catch (error) {
     next({
@@ -95,14 +98,30 @@ io.use(async (socket, next) => {
 })
 
 io.on('connection', (socket) => {
-  console.log(`user ${socket.id} connected`)
   // const user_id = socket.handshake.auth._id
   const { user_id } = socket.handshake.auth.decoded_authorization as TokenPayload
-  console.log(user_id)
   users[user_id] = {
     socket_id: socket.id
   }
   console.log(users)
+
+  // Verify access_token khi emit event
+  socket.use(async (packet, next) => {
+    const { access_token } = socket.handshake.auth
+    try {
+      await verifyAccessToken(access_token)
+      next()
+    } catch (error) {
+      next(new Error('Unauthorized'))
+    }
+  })
+
+  socket.on('error', (error) => {
+    if (error.message === 'Unauthorized') {
+      socket.disconnect()
+    }
+  })
+
   socket.on('send_message', async (data) => {
     console.log(data)
     const { receiver_id, sender_id, content } = data.payload
