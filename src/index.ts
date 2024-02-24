@@ -7,7 +7,7 @@ import { initFolder } from './utils/file'
 import { config } from 'dotenv'
 import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
-import cors from 'cors'
+import cors, { CorsOptions } from 'cors'
 import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
 import likesRouter from './routes/likes.routes'
@@ -20,7 +20,8 @@ import YAML from 'yaml'
 // import path from 'path'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJsdoc from 'swagger-jsdoc'
-import { envConfig } from './constants/config'
+import { envConfig, isProduction } from './constants/config'
+import helmet from 'helmet'
 // import '~/utils/fake'
 
 // const file = fs.readFileSync(path.resolve('twitter-swagger.yaml'), 'utf8')
@@ -58,7 +59,13 @@ databaseService.connect().then(() => {
 })
 const app = express()
 const httpServer = createServer(app)
-app.use(cors())
+app.use(helmet())
+// Khi truy cập vào client khác địa chỉ trong envConfig.clientUrl thì sẽ bị chặn bởi CORS
+const corsOptions: CorsOptions = {
+  origin: isProduction ? envConfig.clientUrl : '*',
+  optionsSuccessStatus: 200
+}
+app.use(cors(corsOptions))
 const port = envConfig.port
 
 // Tạo folder upload
