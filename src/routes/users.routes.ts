@@ -37,12 +37,40 @@ import { UpdateMeReqBody } from '~/models/requests/User.requests'
 import { wrapRequestHandler } from '~/utils/handlers'
 
 const usersRouter = Router()
+
 /**
- * Description: Login a user
- * Path: /login
- * Method: POST
- * Body: {name: string, email: string, password: string}
+ * @swagger
+ * /users/login:
+ *   post:
+ *     tags:
+ *       - users
+ *     summary: Đăng nhập
+ *     description: Đăng nhập vào hệ thống
+ *     operationId: login
+ *     requestBody:
+ *       description: Thông tin đăng nhập
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginBody'
+ *       required: true
+ *     responses:
+ *       '200':
+ *         description: Đăng nhập thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Login success
+ *                 result:
+ *                   $ref: '#/components/schemas/SuccessAuthentication'
+ *       '422':
+ *         description: Invalid input
  */
+
 usersRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
 
 /**
