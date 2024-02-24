@@ -8,7 +8,7 @@ import Tweet from '~/models/schemas/Tweet.schema'
 import Hashtag from '~/models/schemas/Hashtag.schema'
 import { Bookmark } from '~/models/schemas/Bookmark.schema'
 import Like from '~/models/schemas/Like.schema'
-import { Conversation } from '~/models/schemas/Coversations.schema'
+import { Conversation } from '~/models/schemas/Conversations.schema'
 config()
 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@twitter.5ndsv0f.mongodb.net/?retryWrites=true&w=majority`
