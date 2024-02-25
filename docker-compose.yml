@@ -1,0 +1,8 @@
+version: '3'
+services:
+  twitter:
+    image: nguyenminhquang/twitter:v0
+    ports:
+      - '4000:4000'
+    volumes:
+      - ' ~/Documents/NODEJS/Twitter-Clone-v2/uploads:/app/uploads'
