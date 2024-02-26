@@ -23,23 +23,17 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-  - url: http://localhost:4000
+  - url: https://nguyenminhquang.io.vn
 
 tags:
   - name: users
-    description: Các API liên quan đến người dùng twitter
-  - name: tweets
-    description: Các API liên quan đến tweet
+    description: Các API liên quan đến người dùng
   - name: medias
     description: Các API liên quan đến media như upload ảnh, video
   - name: static
     description: Các API liên quan đến serving static file như avatar, ảnh, video
   - name: search
     description: Các API liên quan đến tìm kiếm
-  - name: likes
-    description: Các API liên quan đến like tweet
-  - name: bookmarks
-    description: Các API liên quan đến bookmark tweet
   - name: conversations
     description: Các API liên quan đến chat
 paths:
@@ -48,7 +42,7 @@ paths:
       tags:
         - users
       summary: Đăng nhập
-      description: Đăng nhập vào hệ thống x clone
+      description: Đăng nhập vào hệ thống
       operationId: login
       requestBody:
         description: Thông tin đăng nhập
@@ -329,67 +323,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-  /users/follow:
-    post:
-      tags:
-        - users
-      summary: Follow user
-      description: Follow user
-      operationId: followUser
-      security:
-        - BearerAuth: []
-      requestBody:
-        description: Thông tin follow user
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                followed_user_id:
-                  type: string
-                  format: MongoId
-                  example: 64be0ad2e43d2464394feedb
-        required: true
-      responses:
-        default:
-          description: Follow user thành công
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Follow user thành công
-  /users/{user_id}:
-    delete:
-      tags:
-        - users
-      summary: Unfollow user
-      description: Unfollow user
-      operationId: unfollowUser
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: user_id
-          in: path
-          description: Id của user
-          required: true
-          schema:
-            type: string
-            format: MongoId
-            example: 64be0ad2e43d2464394feedb
-      responses:
-        default:
-          description: Unfollow user thành công
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Unfollow user thành công
   /users/change-password:
     put:
       tags:
@@ -427,177 +360,6 @@ paths:
                   message:
                     type: string
                     example: Đổi mật khẩu thành công
-  /tweets:
-    post:
-      tags:
-        - tweets
-      summary: Tạo tweet
-      description: Tạo tweet
-      operationId: createTweet
-      security:
-        - BearerAuth: []
-      requestBody:
-        description: Thông tin tạo tweet
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TweetRequestBody'
-        required: true
-      responses:
-        default:
-          description: Tạo tweet thành công
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Tạo tweet thành công
-    get:
-      tags:
-        - tweets
-      summary: Lấy danh sách tweet từ những người mình theo dõi
-      description: Lấy danh sách tweet từ những người mình theo dõi
-      operationId: getTweets
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: page
-          in: query
-          description: Số trang
-          required: false
-          schema:
-            type: integer
-            example: 1
-        - name: limit
-          in: query
-          description: Số lượng tweet trên 1 trang
-          required: false
-          schema:
-            type: integer
-            example: 10
-      responses:
-        default:
-          description: Lấy danh sách tweet thành công
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Lấy danh sách tweet thành công
-                  result:
-                    type: object
-                    properties:
-                      tweets:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Tweet'
-                      total_page:
-                        type: integer
-                        example: 1
-                      limit:
-                        type: integer
-                        example: 10
-                      page:
-                        type: integer
-                        example: 1
-  /tweets/{tweet_id}:
-    get:
-      tags:
-        - tweets
-      summary: Lấy thông tin tweet theo id
-      description: Lấy thông tin tweet theo id
-      operationId: getTweetById
-      parameters:
-        - name: tweet_id
-          in: path
-          description: Id của tweet
-          required: true
-          schema:
-            type: string
-            format: MongoId
-            example: 64be0ad2e43d2464394feedb
-      responses:
-        default:
-          description: Lấy thông tin tweet theo id thành công
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Lấy thông tin tweet theo id thành công
-                  result:
-                    $ref: '#/components/schemas/Tweet'
-  /tweets/{tweet_id}/children:
-    get:
-      tags:
-        - tweets
-      summary: Lấy danh sách tweet con theo id
-      description: Lấy danh sách tweet con theo id
-      operationId: getTweetChildrenById
-      parameters:
-        - name: tweet_id
-          in: path
-          description: Id của tweet
-          required: true
-          schema:
-            type: string
-            format: MongoId
-            example: 64be0ad2e43d2464394feedb
-        - name: page
-          in: query
-          description: Số trang
-          required: false
-          schema:
-            type: integer
-            example: 1
-        - name: limit
-          in: query
-          description: Số lượng tweet trên 1 trang
-          required: false
-          schema:
-            type: integer
-            example: 10
-        - name: tweet_type
-          in: query
-          description: Loại tweet
-          required: false
-          schema:
-            $ref: '#/components/schemas/TweetType'
-      responses:
-        default:
-          description: Lấy danh sách tweet con theo id thành công
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Lấy danh sách tweet con theo id thành công
-                  result:
-                    type: object
-                    properties:
-                      tweets:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Tweet'
-                      total_page:
-                        type: integer
-                        example: 1
-                      limit:
-                        type: integer
-                        example: 10
-                      page:
-                        type: integer
-                        example: 1
-                      tweet_type:
-                        $ref: '#/components/schemas/TweetType'
   /medias/upload-image:
     post:
       tags:
