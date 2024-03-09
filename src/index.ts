@@ -79,7 +79,7 @@ const corsOptions: CorsOptions = {
   origin: isProduction ? envConfig.clientUrl : '*',
   optionsSuccessStatus: 200
 }
-app.use(cors(corsOptions))
+app.use(cors())
 const port = envConfig.port
 
 // Tạo folder upload
