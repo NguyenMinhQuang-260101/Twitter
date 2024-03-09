@@ -80,7 +80,8 @@ export const sendVerifyRegisterEmail = (
       .replace('{{title}}', 'Please verify your email')
       .replace('{{content}}', 'Click the button below to verify your email')
       .replace('{{titleLink}}', 'Verify')
-      .replace('{{link}}', `${envConfig.clientUrl}/verify-email?token=${email_verify_token}`)
+      // .replace('{{link}}', `${envConfig.clientUrl}/verify-email?token=${email_verify_token}`)
+      .replace('{{link}}', `http://localhost:3000/verify-email?token=${email_verify_token}`)
   )
 }
 
@@ -99,6 +100,7 @@ export const sendForgotPasswordEmail = (
       )
       .replace('{{content}}', 'Click the button below to reset your password')
       .replace('{{titleLink}}', 'Reset Password')
-      .replace('{{link}}', `${envConfig.clientUrl}/forgot-password?token=${forgot_password_token}`)
+      // .replace('{{link}}', `${envConfig.clientUrl}/forgot-password?token=${forgot_password_token}`)
+      .replace('{{link}}', `http://localhost:3000/forgot-password?token=${forgot_password_token}`)
   )
 }
